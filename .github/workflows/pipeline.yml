@@ -49,8 +49,11 @@ jobs:
     #     working-directory: k8sconfig
     
     steps:
+      - name: Check out to repo
+        uses: actions/checkout@v2
+
       - name: Deploy to Production
         run: |
-          cd src
+          cd k8sconfig
           echo "Deploying to aks cluster..."
     
