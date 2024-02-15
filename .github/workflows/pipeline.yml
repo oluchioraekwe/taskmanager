@@ -79,6 +79,6 @@ jobs:
 
       - name: Deploy to Production
         run: |
-          cd k8sconfig
+          kubectl get rs -n development
           echo "Deploying to aks cluster..."
     
