@@ -7,6 +7,7 @@ on:
         type: string
         description: The image tag
         default: latest
+
   push:
     branches:
       - main
@@ -53,6 +54,28 @@ jobs:
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS context
+        id: set-context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: asesment 
+          cluster-name: taskmanager
+
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Deploy to AKS
+        id: deploy-aks
+        uses: Azure/k8s-deploy@v4
+        with:
+          namespace: 'development'
+          manifests: |
+             k8sconfig/app.yaml
+             k8sconfig/autoscaler.yaml
+          images: oluchioraekwe/taskmanager:latest
+          pull-images: false
 
       - name: Deploy to Production
         run: |
