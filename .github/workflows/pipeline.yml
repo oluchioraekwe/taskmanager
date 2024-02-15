@@ -77,8 +77,15 @@ jobs:
           images: oluchioraekwe/taskmanager:latest
           pull-images: false
 
-      - name: Deploy to Production
+      - name: Update Deployment with latest image
+        if: ${{ !github.event.inputs.tag}}
         run: |
-          kubectl get rs -n development
-          echo "Deploying to aks cluster..."
+          kubectl set image deployment/taskmanager-app taskmanager-app=oluchioraekwe/taskmanager:latest -n development
+          echo "Updating aks cluster with latest image"
+
+      - name: Update Deployment with latest image
+        if: ${{ github.event.inputs.tag}}
+        run: |
+          kubectl set image deployment/taskmanager-app taskmanager-app=oluchioraekwe/taskmanager:${{ github.event.inputs.tag}} -n development
+          echo "Updating aks cluster with latest tag"
     
