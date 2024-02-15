@@ -40,3 +40,16 @@ jobs:
         with:
           push: true
           tags: oluchioraekwe/studentservice:${{ github.event.inputs.tag}}
+
+  deploy-to-aks:
+    needs: docker
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./k8sconfig
+    
+    steps:
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to aks cluster..."
+    
