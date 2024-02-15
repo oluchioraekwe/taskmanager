@@ -59,8 +59,8 @@ jobs:
         id: set-context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: asesment 
-          cluster-name: taskmanager
+          resource-group: task-rg
+          cluster-name: taskcluster
 
       - name: Setup kubectl
         id: install-kubectl
