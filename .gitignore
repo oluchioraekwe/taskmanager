@@ -2,7 +2,8 @@
 node_modules
 dist
 package-lock.json
-infrastructure/
+database.sqlite
+infrastructure/.terraform
 infrastructure/.terraform.lock.hcl
 infrastructure/terraform.tfvars
 infrastructure/terraform.tfstate

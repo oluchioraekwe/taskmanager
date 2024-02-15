@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-app
+  labels:
+    app: taskmanager-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmanager-app
+  template:
+    metadata:
+      labels:
+        app: taskmanager-app
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: taskmanager-app
+        image: oluchioraekwe/taskmanager:latest
+        imagePullPolicy: "Always"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+          requests:
+            cpu: "200m"
+        ports:
+        - containerPort: 4500
+        env:
+        - name: PORT
+          value: "4500"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager
+spec:
+  selector:
+    app: taskmanager-app
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 4500
+      targetPort: 4500
+      nodePort: 30500

@@ -3,7 +3,7 @@ import { IPayload } from "../interface/userInterface"
 import dotenv from "dotenv"
 dotenv.config()
 
- const SECRETE = process.env.TOKEN_KEY as string
+ const SECRETE = "thisismysecretekey0000001"
 
 export const signToken = async(payload:IPayload)=>{
     return jsonwebtoke.sign(payload,SECRETE,{
