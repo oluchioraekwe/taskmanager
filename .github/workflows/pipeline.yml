@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: oluchioraekwe/studentservice:${{ github.event.inputs.tag}}
+          tags: oluchioraekwe/taskmanager:${{ github.event.inputs.tag}}
 
   deploy-to-aks:
     needs: docker
