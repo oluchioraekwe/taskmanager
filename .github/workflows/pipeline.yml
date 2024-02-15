@@ -44,13 +44,15 @@ jobs:
   deploy-to-aks:
     needs: docker
     runs-on: ubuntu-latest
-    # defaults:
-    #   run:
-    #     working-directory: k8sconfig
-    
+        
     steps:
       - name: Check out to repo
         uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1.4.3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Production
         run: |
