@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Change Directory
         run: |
-          cd infrastructure
+          pwd
           echo "Changed to infrastructure Directory"
 
       - name: Set up terraform
