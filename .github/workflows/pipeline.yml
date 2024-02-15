@@ -44,12 +44,13 @@ jobs:
   deploy-to-aks:
     needs: docker
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: k8sconfig
+    # defaults:
+    #   run:
+    #     working-directory: k8sconfig
     
     steps:
       - name: Deploy to Production
         run: |
+          cd k8sconfig
           echo "Deploying to aks cluster..."
     
