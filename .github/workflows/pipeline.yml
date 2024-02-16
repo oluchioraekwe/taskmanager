@@ -193,6 +193,8 @@ jobs:
       #     cat path/to/download/terraform-output.txt
       - name: Set AKS context
         run: |
+          result = $(echo "$(az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled)")
+          echo $result
           az config set extension.use_dynamic_install=yes_without_prompt
           az aks approuting enable -g task-rg -n taskcluster
           az aks get-credentials -g task-rg -n taskcluster
