@@ -11,11 +11,13 @@ terraform {
     storage_account_name = "aksstore"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
+    use_msi = true
   }
 }
 
 
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
+  use_msi = true
   features {}
 }
