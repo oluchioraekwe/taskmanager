@@ -50,6 +50,8 @@ jobs:
 
       - name: Set up terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       - name: Terraform Init
         id: init
@@ -75,12 +77,14 @@ jobs:
         if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
-      - name: Upload Terraform output artifact
-        uses: actions/upload-artifact@v2
+      - name: Save Terraform Output to JSON File
+        run: |
+          terraform output -json > output.json
+      - name: Upload Terraform Output JSON File as Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: terraform-output
-          path: path/to/output
-
+          name: terraformOutput
+          path: output.json
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
@@ -179,7 +183,7 @@ jobs:
       - name: Download Terraform output artifact
         uses: actions/download-artifact@v2
         with:
-          name: terraform-output
+          name: terraformOutput
           path: path/to/download
 
       - name: Use Terraform output
