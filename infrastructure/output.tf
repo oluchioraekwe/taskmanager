@@ -3,5 +3,5 @@ output "rg-name" {
 }
 
 output "aks-name" {
-  value = azurerm_kubernetes_cluster.k8s.name
+  value = module.aks-cluster.cluster_name
 }
