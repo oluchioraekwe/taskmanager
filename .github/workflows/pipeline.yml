@@ -75,22 +75,28 @@ jobs:
         if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
-      - name: Create Files for Artifacts
-        shell: bash
-        run: |
-          echo "$(terraform output -raw aks-name)" >> cluster.txt
-          echo "$(terraform output -raw rg-name)" >> rg.txt
-      - name: Upload Artifacts Cluster Name
-        uses: actions/upload-artifact@v4
+      - name: Upload Terraform output artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: cluster_name
-          path: cluster.txt
+          name: terraform-output
+          path: path/to/output
 
-      - name: Upload Artifacts Resource Group Name
-        uses: actions/upload-artifact@v4
-        with:
-          name: rg_name
-          path: rg.txt
+      # - name: Create Files for Artifacts
+      #   shell: bash
+      #   run: |
+      #     echo "$(terraform output -raw aks-name)" >> cluster.txt
+      #     echo "$(terraform output -raw rg-name)" >> rg.txt
+      # - name: Upload Artifacts Cluster Name
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: cluster_name
+      #     path: cluster.txt
+
+      # - name: Upload Artifacts Resource Group Name
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: rg_name
+      #     path: rg.txt
 
       - name: Terraform destroy
         id: destroy
@@ -170,6 +176,16 @@ jobs:
       #     resource-group: task-rg
       #     cluster-name: taskcluster
 
+      - name: Download Terraform output artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-output
+          path: path/to/download
+
+      - name: Use Terraform output
+        run: |
+          # Access output from downloaded file
+          cat path/to/download/terraform-output.txt
       - name: Set AKS context
         run: |
           az config set extension.use_dynamic_install=yes_without_prompt
@@ -191,12 +207,12 @@ jobs:
           images: oluchioraekwe/taskmanager:latest
           pull-images: false
 
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
+      # - name: Azure CLI script
+      #   uses: azure/CLI@v1
+      #   with:
+      #     azcliversion: latest
+      #     inlineScript: |
+      #       az account show
 
       - name: Update Deployment with latest image
         if: ${{ !github.event.inputs.tag}}
@@ -204,7 +220,7 @@ jobs:
           kubectl set image deployment/taskmanager-app taskmanager-app=oluchioraekwe/taskmanager:latest -n development
           echo "Updating aks cluster with latest image"
 
-      - name: Update Deployment with latest image
+      - name: Update Deployment with latest image and new tag
         if: ${{ github.event.inputs.tag}}
         run: |
           kubectl set image deployment/taskmanager-app taskmanager-app=oluchioraekwe/taskmanager:${{ github.event.inputs.tag}} -n development
