@@ -80,8 +80,9 @@ jobs:
       - name: Save Terraform Output to JSON File
         run: |
           terraform output -json > output.json
-          echo "$(terraform output -raw aks-name)"
-          echo "$(terraform output -raw rg-name)"
+          echo "$(terraform output -raw aks-name)" >> output.txt
+          echo -ne "$(terraform output -raw rg-name)" >> output.txt
+          cat output.txt
 
       - name: Upload Terraform Output JSON File as Artifact
         uses: actions/upload-artifact@v3
