@@ -19,6 +19,7 @@ on:
   push:
     branches:
       - main
+
 permissions:
       id-token: write
       contents: read
@@ -31,14 +32,14 @@ jobs:
         working-directory: infrastructure
     steps:
       - name: Azure login
-        # uses: azure/login@v1
-        # with:
-        #   client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        #   tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        #   subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        # uses: azure/login@v1
+        # with:
+        #   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Check out to repo
         uses: actions/checkout@v2
