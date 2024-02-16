@@ -180,9 +180,7 @@ jobs:
         run: |
           echo "$(az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled)" >> result.txt
           cat result.txt
-          az config set extension.use_dynamic_install=yes_without_prompt
-          az aks approuting enable -g task-rg -n taskcluster
-          az aks get-credentials -g task-rg -n taskcluster
+         
 
       - name: Setup kubectl
         id: install-kubectl
