@@ -164,7 +164,7 @@ jobs:
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Set AKS context
         run: |
-          az aks get-credentials -g task-rg -n taskcluster      
+          az aks get-credentials -g $OUTPUT2 -n $OUTPUT1      
          
 
       - name: Setup kubectl
