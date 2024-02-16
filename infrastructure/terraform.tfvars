@@ -1,0 +1,5 @@
+rg-name          = "task-rg"
+rg-location      = "East US"
+cluster_name     = "taskcluster"
+cluster_location = "West Europe"
+cluster_rg       = "assesment-rg"
