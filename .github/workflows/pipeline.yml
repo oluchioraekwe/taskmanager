@@ -77,28 +77,6 @@ jobs:
         if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
-      # - name: create temp folder
-      #   run: mkdir download
-
-      # - name: Save Terraform Output to JSON File
-      #   run: |
-      #     terraform output -json > output.json
-      #     echo "$(terraform output -raw aks-name)" >> download/output.txt
-      #     echo -ne "$(terraform output -raw rg-name)" >> download/output.txt
-      #     cat download/output.txt
-      #     head -1 download/output.txt
-
-      # - name: Read Files
-      #   run: |
-      #     cat download/output.txt
-      #     head -1 download/output.txt
-
-      # - name: Upload Terraform Output JSON File as Artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: terraformOutput
-      #     path: ./download/output.txt
-    
       - id: step1
         run: echo "cluster=$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
       - id: step2
@@ -175,13 +153,6 @@ jobs:
              k8sconfig/autoscaler.yaml
           images: oluchioraekwe/taskmanager:latest
           pull-images: false
-
-      # - name: Azure CLI script
-      #   uses: azure/CLI@v1
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: |
-      #       az account show
 
       - name: Update Deployment with latest image
         if: ${{ !github.event.inputs.tag}}
