@@ -25,146 +25,143 @@ permissions:
       contents: read
 
 jobs:
-  terraform:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: infrastructure
-    outputs:
-      output1: ${{ steps.step1.outputs.cluster }}
-      output2: ${{ steps.step2.outputs.rg }}
-    steps:
-      - name: Azure login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        # uses: azure/login@v1
-        # with:
-        #   creds: ${{ secrets.AZURE_CREDENTIALS }}
+  # terraform:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: infrastructure
+  #   outputs:
+  #     output1: ${{ steps.step1.outputs.cluster }}
+  #     output2: ${{ steps.step2.outputs.rg }}
+  #   steps:
+  #     - name: Azure login
+  #       uses: azure/login@v1
+  #       with:
+  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Check out to repo
-        uses: actions/checkout@v2
-      - name: Change Directory
-        run: |
-          pwd
-          echo "Changed to infrastructure Directory"
+  #     - name: Check out to repo
+  #       uses: actions/checkout@v2
+  #     - name: Change Directory
+  #       run: |
+  #         pwd
+  #         echo "Changed to infrastructure Directory"
 
-      - name: Set up terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_wrapper: false
+  #     - name: Set up terraform
+  #       uses: hashicorp/setup-terraform@v3
+  #       with:
+  #         terraform_wrapper: false
 
-      - name: Terraform Init
-        id: init
-        run: terraform init
+  #     - name: Terraform Init
+  #       id: init
+  #       run: terraform init
 
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt
-        continue-on-error: true
+  #     - name: Terraform fmt
+  #       id: fmt
+  #       run: terraform fmt
+  #       continue-on-error: true
 
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-        continue-on-error: true
+  #     - name: Terraform Validate
+  #       id: validate
+  #       run: terraform validate -no-color
+  #       continue-on-error: true
 
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
-        continue-on-error: false
+  #     - name: Terraform Plan
+  #       id: plan
+  #       run: terraform plan -no-color
+  #       continue-on-error: false
         
-      - name: Terraform Apply
-        id: apply
-        if: ${{ github.event.inputs.terraform-actions == 'apply'}}
-        run: terraform apply -auto-approve
+  #     - name: Terraform Apply
+  #       id: apply
+  #       if: ${{ github.event.inputs.terraform-actions == 'apply'}}
+  #       run: terraform apply -auto-approve
 
-      - name: create temp folder
-        run: mkdir download
+  #     - name: create temp folder
+  #       run: mkdir download
 
-      - name: Save Terraform Output to JSON File
-        run: |
-          terraform output -json > output.json
-          echo "$(terraform output -raw aks-name)" >> download/output.txt
-          echo -ne "$(terraform output -raw rg-name)" >> download/output.txt
-          cat download/output.txt
-          head -1 download/output.txt
+  #     - name: Save Terraform Output to JSON File
+  #       run: |
+  #         terraform output -json > output.json
+  #         echo "$(terraform output -raw aks-name)" >> download/output.txt
+  #         echo -ne "$(terraform output -raw rg-name)" >> download/output.txt
+  #         cat download/output.txt
+  #         head -1 download/output.txt
 
-      - name: Read Files
-        run: |
-          cat download/output.txt
-          head -1 download/output.txt
+  #     - name: Read Files
+  #       run: |
+  #         cat download/output.txt
+  #         head -1 download/output.txt
 
-      - name: Upload Terraform Output JSON File as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraformOutput
-          path: ./download/output.txt
+  #     - name: Upload Terraform Output JSON File as Artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: terraformOutput
+  #         path: ./download/output.txt
     
-      - id: step1
-        run: echo "cluster=$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
-      - id: step2
-        run: echo "rg=$(terraform output -raw rg-name)" >> "$GITHUB_OUTPUT"
-      # - name: Create Files for Artifacts
-      #   shell: bash
-      #   run: |
-      #     echo "$(terraform output -raw aks-name)" >> cluster.txt
-      #     echo "$(terraform output -raw rg-name)" >> rg.txt
-      # - name: Upload Artifacts Cluster Name
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: cluster_name
-      #     path: cluster.txt
+  #     - id: step1
+  #       run: echo "cluster=$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
+  #     - id: step2
+  #       run: echo "rg=$(terraform output -raw rg-name)" >> "$GITHUB_OUTPUT"
+  #     # - name: Create Files for Artifacts
+  #     #   shell: bash
+  #     #   run: |
+  #     #     echo "$(terraform output -raw aks-name)" >> cluster.txt
+  #     #     echo "$(terraform output -raw rg-name)" >> rg.txt
+  #     # - name: Upload Artifacts Cluster Name
+  #     #   uses: actions/upload-artifact@v4
+  #     #   with:
+  #     #     name: cluster_name
+  #     #     path: cluster.txt
 
-      # - name: Upload Artifacts Resource Group Name
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: rg_name
-      #     path: rg.txt
+  #     # - name: Upload Artifacts Resource Group Name
+  #     #   uses: actions/upload-artifact@v4
+  #     #   with:
+  #     #     name: rg_name
+  #     #     path: rg.txt
 
-      - name: Terraform destroy
-        id: destroy
-        if: ${{ github.event.inputs.terraform-actions == 'destroy'}}
-        run: terraform destroy -auto-approve
-      # - name: Azure CLI script
-      #   uses: azure/CLI@v1
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: |
-      #       az account show
-  docker:
-    needs: terraform
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+  #     - name: Terraform destroy
+  #       id: destroy
+  #       if: ${{ github.event.inputs.terraform-actions == 'destroy'}}
+  #       run: terraform destroy -auto-approve
+  #     # - name: Azure CLI script
+  #     #   uses: azure/CLI@v1
+  #     #   with:
+  #     #     azcliversion: latest
+  #     #     inlineScript: |
+  #     #       az account show
+  # docker:
+  #   needs: terraform
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push latest
-        if: ${{ !github.event.inputs.tag}}
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: oluchioraekwe/taskmanager:latest
+  #     - name: Build and push latest
+  #       if: ${{ !github.event.inputs.tag}}
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         push: true
+  #         tags: oluchioraekwe/taskmanager:latest
 
-      - name: Build and push tag
-        if: ${{ github.event.inputs.tag}}
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: oluchioraekwe/taskmanager:${{ github.event.inputs.tag}}
+  #     - name: Build and push tag
+  #       if: ${{ github.event.inputs.tag}}
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         push: true
+  #         tags: oluchioraekwe/taskmanager:${{ github.event.inputs.tag}}
 
   deploy-to-aks:
-    needs: [docker, terraform]
+    # needs: [docker, terraform]
     runs-on: ubuntu-latest
         
     steps:
@@ -179,22 +176,10 @@ jobs:
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-            # - name: Set AKS context
-      #   id: set-context
-      #   uses: azure/aks-set-context@v3
-      #   with:
-      #     resource-group: task-rg
-      #     cluster-name: taskcluster
-
-
-      # - name: Use Terraform output
-      #   run: |
-      #     # Access output from downloaded file
-      #     cat path/to/download/terraform-output.txt
       - name: Set AKS context
         run: |
-          result = $(echo "$(az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled)")
-          echo $result
+          echo "$(az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled)" >> result.txt
+          cat result.txt
           az config set extension.use_dynamic_install=yes_without_prompt
           az aks approuting enable -g task-rg -n taskcluster
           az aks get-credentials -g task-rg -n taskcluster
