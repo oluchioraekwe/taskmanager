@@ -78,3 +78,9 @@ variable "automatic_channel_upgrade" {
   description = "The upgrade channel for this Kubernetes Cluster. Possible values are patch, rapid, node-image and stable. Omitting this field sets this value to none."
   default = "patch"
 }
+
+variable "http_routing_enabled" {
+  type = bool
+  description = "Should HTTP Application Routing be enabled?"
+  default = true
+}

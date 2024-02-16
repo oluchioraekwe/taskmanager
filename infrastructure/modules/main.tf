@@ -21,7 +21,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     max_count = var.node_pool_max
 
   }
-
+  http_application_routing_enabled = var.http_routing_enabled
+  ingress_application_gateway {
+    
+  }
   automatic_channel_upgrade = var.automatic_channel_upgrade
 
 
