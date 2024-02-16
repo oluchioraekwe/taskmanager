@@ -71,12 +71,12 @@ jobs:
         
       - name: Terraform Apply
         id: apply
-        if: ${{ github.event.inputs.action == 'apply'}}
+        if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
       - name: Terraform destroy
         id: destroy
-        if: ${{ github.event.inputs.action == 'destroy'}}
+        if: ${{ github.event.inputs.terraform-actions == 'destroy'}}
         run: terraform destroy -auto-approve
       # - name: Azure CLI script
       #   uses: azure/CLI@v1
