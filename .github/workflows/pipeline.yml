@@ -30,6 +30,9 @@ jobs:
     defaults:
       run:
         working-directory: infrastructure
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+      output2: ${{ steps.step2.outputs.test }}
     steps:
       - name: Azure login
         uses: azure/login@v1
@@ -98,6 +101,11 @@ jobs:
         with:
           name: terraformOutput
           path: ./download/output.txt
+    
+      - id: step1
+        run: echo "$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
+      - id: step2
+        run: echo "$(terraform output -raw rg-name)" >> "$GITHUB_OUTPUT"
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
@@ -156,10 +164,14 @@ jobs:
           tags: oluchioraekwe/taskmanager:${{ github.event.inputs.tag}}
 
   deploy-to-aks:
-    needs: docker
+    needs: [docker, terraform]
     runs-on: ubuntu-latest
         
     steps:
+      - env:
+          OUTPUT1: ${{needs.terraform.outputs.output1}}
+          OUTPUT2: ${{needs.terraform.outputs.output2}}
+        run: echo "$OUTPUT1 $OUTPUT2"
       - name: Check out to repo
         uses: actions/checkout@v2
 
@@ -167,42 +179,18 @@ jobs:
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      # - name: Download Cluster name
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: cluster_name
-
-      # - name: Download Resource Group name
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: rg_name
-      # - name: Print cluster and rg names
-      #   shell: bash
-      #   run: |
-      #     clusterName = `cat cluster.txt`
-      #     rgName = `cat rg.txt`
-      #     echo Cluster name is $clusterName and RG name is $rgName
-
-      # - name: Use Names in this steps
-      #   run: |
-      #     echo Cluster name is $clusterName and RG name is $rgName in New step
-      # - name: Set AKS context
+            # - name: Set AKS context
       #   id: set-context
       #   uses: azure/aks-set-context@v3
       #   with:
       #     resource-group: task-rg
       #     cluster-name: taskcluster
 
-      - name: Download Terraform output artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: terraformOutput
-          path: path/to/download
 
-      - name: Use Terraform output
-        run: |
-          # Access output from downloaded file
-          cat path/to/download/terraform-output.txt
+      # - name: Use Terraform output
+      #   run: |
+      #     # Access output from downloaded file
+      #     cat path/to/download/terraform-output.txt
       - name: Set AKS context
         run: |
           az config set extension.use_dynamic_install=yes_without_prompt
