@@ -83,6 +83,8 @@ jobs:
           echo "$(terraform output -raw aks-name)" >> output.txt
           echo -ne "$(terraform output -raw rg-name)" >> output.txt
           cat output.txt
+          cat output.json
+          head -1 output.txt
 
       - name: Upload Terraform Output JSON File as Artifact
         uses: actions/upload-artifact@v3
