@@ -31,8 +31,8 @@ jobs:
       run:
         working-directory: infrastructure
     outputs:
-      output1: ${{ steps.step1 }}
-      output2: ${{ steps.step2 }}
+      output1: ${{ steps.step1.outputs.cluster }}
+      output2: ${{ steps.step2.outputs.rg }}
     steps:
       - name: Azure login
         uses: azure/login@v1
@@ -103,9 +103,9 @@ jobs:
           path: ./download/output.txt
     
       - id: step1
-        run: echo "$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
+        run: echo "cluster=$(terraform output -raw aks-name)" >> "$GITHUB_OUTPUT"
       - id: step2
-        run: echo "$(terraform output -raw rg-name)" >> "$GITHUB_OUTPUT"
+        run: echo "rg=$(terraform output -raw rg-name)" >> "$GITHUB_OUTPUT"
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
