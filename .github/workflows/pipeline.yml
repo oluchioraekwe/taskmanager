@@ -178,8 +178,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set AKS context
         run: |
-          echo "$(az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled)" >> result.txt
-          cat result.txt
+          az aks show --resource-group task-rg --name taskcluster --query addonProfiles.httpApplicationRouting.enabled
+          
          
 
       - name: Setup kubectl
