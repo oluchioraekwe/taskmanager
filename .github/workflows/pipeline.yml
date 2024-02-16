@@ -74,6 +74,22 @@ jobs:
         if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
+      - shell: bash
+        run: |
+          echo "$(terraform output -raw aks-name)" >> cluster.txt
+          echo "$(terraform output -raw rg-name)" >> rg.txt
+      - name: Upload Artifacts Cluster Name
+        uses: actions/upload-artifact@v4
+        with:
+          name: cluster_name
+          path: cluster.txt
+
+      - name: Upload Artifacts Resource Group Name
+        uses: actions/upload-artifact@v4
+        with:
+          name: rg_name
+          path: rg.txt
+
       - name: Terraform destroy
         id: destroy
         if: ${{ github.event.inputs.terraform-actions == 'destroy'}}
@@ -126,7 +142,25 @@ jobs:
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Download Cluster name
+        uses: actions/download-artifact@v4
+        with:
+          name: cluster_name
 
+      - name: Download Resource Group name
+        uses: actions/download-artifact@v4
+        with:
+          name: rg_name
+      - name: Print cluster and rg names
+        shell: bash
+        run: |
+          clusterName = `cat cluster.txt`
+          rgName = `cat rg.txt`
+          echo Cluster name is $clusterName and RG name is $rgName
+
+      - name: Use Names in this steps
+        run: |
+          echo Cluster name is $clusterName and RG name is $rgName in New step
       - name: Set AKS context
         id: set-context
         uses: azure/aks-set-context@v3
