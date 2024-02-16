@@ -86,14 +86,18 @@ jobs:
           echo "$(terraform output -raw aks-name)" >> download/output.txt
           echo -ne "$(terraform output -raw rg-name)" >> download/output.txt
           cat download/output.txt
-          cat output.json
+          head -1 download/output.txt
+
+      - name: Read Files
+        run: |
+          cat download/output.txt
           head -1 download/output.txt
 
       - name: Upload Terraform Output JSON File as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: terraformOutput
-          path: download/output.txt
+          path: ./download/output.txt
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
