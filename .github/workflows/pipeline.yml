@@ -77,20 +77,25 @@ jobs:
         if: ${{ github.event.inputs.terraform-actions == 'apply'}}
         run: terraform apply -auto-approve
 
+      - name: create temp folder
+        run: mkdir download
+
       - name: Save Terraform Output to JSON File
         run: |
+          cd download
           terraform output -json > output.json
           echo "$(terraform output -raw aks-name)" >> output.txt
           echo -ne "$(terraform output -raw rg-name)" >> output.txt
           cat output.txt
           cat output.json
           head -1 output.txt
+          cd ..
 
       - name: Upload Terraform Output JSON File as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: terraformOutput
-          path: output.json
+          path: download
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
