@@ -93,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: terraformOutput
-          path: download
+          path: download/output.txt
       # - name: Create Files for Artifacts
       #   shell: bash
       #   run: |
